@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PROJECT EQUESTRIA // COLLECTIVE</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐴</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=VT323&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green: #00ff88;
+      --green-dim: #00cc66;
+      --green-dark: #003322;
+      --red: #ff2255;
+      --cyan: #00eeff;
+      --bg: #050a07;
+      --bg2: #081008;
+      --panel: rgba(0,255,136,0.04);
+      --border: rgba(0,255,136,0.18);
+      --text: #c8ffd8;
+      --muted: #4a7a60;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Share Tech Mono', monospace;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    /* ── SCAN LINES ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.08) 2px,
+        rgba(0,0,0,0.08) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── NOISE ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.25;
+      pointer-events: none;
+      z-index: 9998;
+    }
+
+    /* ── MATRIX CANVAS ── */
+    #matrix-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      opacity: 0.07;
+      z-index: 0;
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 3rem;
+      height: 56px;
+      background: rgba(5,10,7,0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Orbitron', monospace;
+      font-weight: 900;
+      font-size: 1rem;
+      color: var(--green);
+      letter-spacing: 0.2em;
+      text-shadow: 0 0 20px var(--green);
+    }
+
+    .nav-logo span { color: var(--red); }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      transition: color 0.2s;
+      text-transform: uppercase;
+    }
+
+    .nav-links a:hover { color: var(--green); text-shadow: 0 0 10px var(--green); }
+
+    .nav-status {
+      font-size: 0.7rem;
+      color: var(--green);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,255,136,0.4); }
+      50% { opacity: 0.6; box-shadow: 0 0 0 6px rgba(0,255,136,0); }
+    }
+
+    /* ── SECTIONS ── */
+    section {
+      position: relative;
+      z-index: 1;
+      padding: 7rem 3rem 5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      max-width: none;
+      padding: 7rem 4rem 4rem;
+    }
+
+    .hero-eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.35em;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      animation: fadeInUp 0.8s ease both;
+    }
+
+    .hero-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(3rem, 8vw, 7rem);
+      font-weight: 900;
+      line-height: 0.95;
+      color: var(--green);
+      text-shadow: 0 0 40px rgba(0,255,136,0.4), 0 0 80px rgba(0,255,136,0.15);
+      letter-spacing: -0.02em;
+      animation: fadeInUp 0.8s 0.1s ease both;
+      margin-bottom: 0.2em;
+    }
+
+    .hero-title .glitch {
+      position: relative;
+      display: inline-block;
+    }
+
+    .hero-title .glitch::before,
+    .hero-title .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      clip-path: polygon(0 30%, 100% 30%, 100% 55%, 0 55%);
+    }
+
+    .hero-title .glitch::before {
+      color: var(--red);
+      transform: translateX(-4px);
+      animation: glitch1 3s infinite;
+    }
+
+    .hero-title .glitch::after {
+      color: var(--cyan);
+      transform: translateX(4px);
+      animation: glitch2 3s infinite;
+    }
+
+    @keyframes glitch1 {
+      0%,90%,100% { clip-path: none; transform: translateX(0); opacity: 0; }
+      92% { clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%); transform: translateX(-6px); opacity: 1; }
+      94% { clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%); transform: translateX(3px); opacity: 1; }
+      96% { clip-path: none; opacity: 0; }
+    }
+
+    @keyframes glitch2 {
+      0%,90%,100% { clip-path: none; transform: translateX(0); opacity: 0; }
+      91% { clip-path: polygon(0 50%, 100% 50%, 100% 70%, 0 70%); transform: translateX(6px); opacity: 1; }
+      93% { clip-path: polygon(0 10%, 100% 10%, 100% 30%, 0 30%); transform: translateX(-3px); opacity: 1; }
+      95% { opacity: 0; }
+    }
+
+    .hero-subtitle {
+      font-family: 'VT323', monospace;
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      color: var(--cyan);
+      letter-spacing: 0.1em;
+      animation: fadeInUp 0.8s 0.2s ease both;
+      margin-bottom: 2.5rem;
+      text-shadow: 0 0 15px rgba(0,238,255,0.5);
+    }
+
+    .hero-desc {
+      max-width: 600px;
+      font-size: 0.88rem;
+      line-height: 1.8;
+      color: #7ab896;
+      animation: fadeInUp 0.8s 0.3s ease both;
+      margin-bottom: 3rem;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      animation: fadeInUp 0.8s 0.4s ease both;
+    }
+
+    .btn-primary {
+      padding: 0.8rem 2rem;
+      background: transparent;
+      border: 1px solid var(--green);
+      color: var(--green);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      transition: color 0.3s;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--green);
+      transform: translateX(-101%);
+      transition: transform 0.3s ease;
+    }
+
+    .btn-primary:hover::before { transform: translateX(0); }
+    .btn-primary:hover { color: var(--bg); }
+
+    .btn-secondary {
+      padding: 0.8rem 2rem;
+      background: transparent;
+      border: 1px solid var(--muted);
+      color: var(--muted);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      transition: border-color 0.3s, color 0.3s;
+    }
+
+    .btn-secondary:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    /* ── TERMINAL ANIMATION ── */
+    .terminal-block {
+      position: absolute;
+      right: 4rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 420px;
+      background: rgba(0,10,5,0.9);
+      border: 1px solid var(--border);
+      padding: 0;
+      font-size: 0.75rem;
+      display: none;
+      animation: fadeInUp 1s 0.5s ease both;
+      box-shadow: 0 0 60px rgba(0,255,136,0.08), inset 0 0 40px rgba(0,255,136,0.02);
+    }
+
+    @media (min-width: 1100px) { .terminal-block { display: block; } }
+
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1rem;
+      background: rgba(0,255,136,0.06);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .t-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .t-dot.red { background: #ff5f57; }
+    .t-dot.yellow { background: #febc2e; }
+    .t-dot.green { background: var(--green); }
+    .t-title { margin-left: 0.5rem; color: var(--muted); font-size: 0.7rem; letter-spacing: 0.1em; }
+
+    .terminal-body {
+      padding: 1.2rem 1.4rem;
+      height: 280px;
+      overflow: hidden;
+      line-height: 1.7;
+    }
+
+    .t-line { color: var(--muted); opacity: 0; }
+    .t-line.visible { opacity: 1; }
+    .t-line .prompt { color: var(--green); }
+    .t-line .cmd { color: var(--text); }
+    .t-line .out { color: #4fa870; }
+    .t-line .warn { color: var(--red); }
+    .t-line .ok { color: var(--green); }
+
+    .cursor {
+      display: inline-block;
+      width: 8px; height: 14px;
+      background: var(--green);
+      animation: blink 1s infinite;
+      vertical-align: middle;
+    }
+
+    @keyframes blink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
+
+    /* ── SECTION HEADER ── */
+    .sec-header {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .sec-tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      color: var(--green);
+      text-transform: uppercase;
+      padding: 0.3rem 0.8rem;
+      border: 1px solid var(--green);
+      white-space: nowrap;
+    }
+
+    .sec-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+
+    .sec-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1rem;
+      letter-spacing: 0.05em;
+    }
+
+    .sec-title span { color: var(--green); }
+
+    /* ── ABOUT GRID ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 700px) { .about-grid { grid-template-columns: 1fr; } }
+
+    .about-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 2rem;
+      position: relative;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .about-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: var(--green);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .about-card:hover { border-color: rgba(0,255,136,0.4); box-shadow: 0 0 30px rgba(0,255,136,0.06); }
+    .about-card:hover::before { opacity: 1; }
+
+    .card-icon { font-size: 1.8rem; margin-bottom: 1rem; }
+    .card-title { font-family: 'Orbitron', monospace; font-size: 0.9rem; color: var(--green); letter-spacing: 0.1em; margin-bottom: 0.8rem; }
+    .card-text { font-size: 0.82rem; line-height: 1.9; color: #7ab896; }
+
+    /* ── MANIFESTO ── */
+    #manifesto { background: rgba(0,255,136,0.02); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+    .manifesto-inner { max-width: 800px; margin: 0 auto; }
+
+    .manifesto-quote {
+      font-family: 'VT323', monospace;
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      line-height: 1.5;
+      color: var(--cyan);
+      padding: 2.5rem;
+      border-left: 3px solid var(--cyan);
+      background: rgba(0,238,255,0.03);
+      margin-bottom: 2rem;
+      text-shadow: 0 0 10px rgba(0,238,255,0.3);
+    }
+
+    .manifesto-points {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .manifesto-point {
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+
+    .point-num {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.7rem;
+      color: var(--green);
+      padding-top: 0.1rem;
+      min-width: 40px;
+    }
+
+    .point-text { font-size: 0.85rem; line-height: 1.8; color: var(--text); }
+
+    /* ── SKILLS / EXPERTISE ── */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .skill-item {
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      background: var(--panel);
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .skill-item::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 2px;
+      background: var(--green);
+      transition: width 0.4s ease;
+    }
+
+    .skill-item:hover::after { width: 100%; }
+    .skill-item:hover { border-color: rgba(0,255,136,0.3); }
+
+    .skill-label { font-size: 0.72rem; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; margin-bottom: 0.5rem; }
+    .skill-name { font-family: 'Orbitron', monospace; font-size: 0.85rem; color: var(--text); margin-bottom: 1rem; }
+
+    .skill-bar-bg { height: 3px; background: rgba(0,255,136,0.1); }
+    .skill-bar { height: 3px; background: var(--green); box-shadow: 0 0 8px var(--green); transition: width 1.5s ease; }
+
+    /* ── ETHICAL STATEMENT ── */
+    .ethics-box {
+      border: 1px solid var(--red);
+      background: rgba(255,34,85,0.04);
+      padding: 2.5rem;
+      position: relative;
+    }
+
+    .ethics-box::before {
+      content: '// WICHTIG';
+      position: absolute;
+      top: -0.6rem;
+      left: 1.5rem;
+      background: var(--bg);
+      padding: 0 0.5rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--red);
+    }
+
+    .ethics-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 1rem;
+      color: var(--red);
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.1em;
+    }
+
+    .ethics-text {
+      font-size: 0.85rem;
+      line-height: 2;
+      color: #c0a0a8;
+    }
+
+    .ethics-text strong { color: var(--red); }
+
+    /* ── CONTACT ── */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 700px) { .contact-grid { grid-template-columns: 1fr; } }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+
+    .contact-item:hover { border-color: rgba(0,255,136,0.4); transform: translateX(4px); }
+
+    .contact-icon { font-size: 1.4rem; }
+    .contact-label { font-size: 0.65rem; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; }
+    .contact-val { font-size: 0.85rem; color: var(--text); margin-top: 0.2rem; }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 2rem 4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-brand {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.8rem;
+      color: var(--green);
+      letter-spacing: 0.2em;
+    }
+
+    .footer-copy {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    /* ── ANIMATION HELPERS ── */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--green); border-radius: 2px; }
+
+    /* ── HORIZONTAL TICKER ── */
+    .ticker-wrap {
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+      background: rgba(0,255,136,0.02);
+      padding: 0.6rem 0;
+    }
+
+    .ticker {
+      display: flex;
+      gap: 4rem;
+      width: max-content;
+      animation: ticker 25s linear infinite;
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .ticker span { white-space: nowrap; }
+    .ticker .hi { color: var(--green); }
+
+    @keyframes ticker {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="matrix-bg"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">PROJECT<span>::</span>EQUESTRIA</div>
+  <ul class="nav-links">
+    <li><a href="#about">Über uns</a></li>
+    <li><a href="#manifesto">Manifest</a></li>
+    <li><a href="#expertise">Skills</a></li>
+    <li><a href="#ethics">Ethik</a></li>
+    <li><a href="#contact">Kontakt</a></li>
+  </ul>
+  <div class="nav-status"><div class="status-dot"></div>ONLINE</div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-eyebrow">// INITIALISIERUNG ABGESCHLOSSEN — WILLKOMMEN</div>
+  <h1 class="hero-title">
+    <span class="glitch" data-text="PROJECT">PROJECT</span><br>
+    EQUESTRIA
+  </h1>
+  <p class="hero-subtitle">_ WIR ZERSTÖREN.</p>
+  <p class="hero-desc">
+    Eine Gruppe unabhängiger Sicherheitsforscher, Ethical Hacker und Digitaler Aufklärer.
+    Wir suchen die Schwachstellen in Systemen und finden die besten Lösungen sie zu exploiten.
+  </p>
+  <div class="hero-btns">
+    <a href="#about" class="btn-primary">Mehr erfahren</a>
+    <a href="#contact" class="btn-secondary">Kontakt</a>
+  </div>
+
+  <!-- FLOATING TERMINAL -->
+  <div class="terminal-block">
+    <div class="terminal-header">
+      <div class="t-dot red"></div>
+      <div class="t-dot yellow"></div>
+      <div class="t-dot green"></div>
+      <span class="t-title">equestria@root:~$</span>
+    </div>
+    <div class="terminal-body" id="terminal-body">
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span class="hi">PROJECT EQUESTRIA</span>
+    <span>// ETHICAL HACKING //</span>
+    <span class="hi">AUFKLÄRUNG</span>
+    <span>// SICHERHEITSFORSCHUNG //</span>
+    <span class="hi">CTF &amp; RED TEAM</span>
+    <span>// DIGITALE FREIHEIT //</span>
+    <span class="hi">NO BLACK HAT</span>
+    <span>// (UN)VERANTWORTUNGSVOLLE OFFENLEGUNG //</span>
+    <!-- repeat for seamless loop -->
+    <span class="hi">PROJECT EQUESTRIA</span>
+    <span>// ETHICAL HACKING //</span>
+    <span class="hi">AUFKLÄRUNG</span>
+    <span>// SICHERHEITSFORSCHUNG //</span>
+    <span class="hi">CTF &amp; RED TEAM</span>
+    <span>// DIGITALE FREIHEIT //</span>
+    <span class="hi">NO BLACK HAT</span>
+    <span>// (UN)VERANTWORTUNGSVOLLE OFFENLEGUNG //</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="sec-header fade-in">
+    <div class="sec-tag">01 // Über Uns</div>
+    <div class="sec-line"></div>
+  </div>
+  <h2 class="sec-title fade-in">Wer ist <span>Project Equestria</span>?</h2>
+  <p class="fade-in" style="font-size:0.88rem;line-height:1.9;color:#7ab896;max-width:700px;margin-bottom:2rem;">
+    Project Equestria ist eine Hackergruppe die von Nova ins Leben gerufen wurde, 
+    die sich dem Ziel verschrieben haben, Schwachstellen in jedem System zu finden.
+    Vielleicht sind wir kriminell aber niemand wird das je wissen.
+  </p>
+  <div class="about-grid">
+    <div class="about-card fade-in">
+      <div class="card-icon">🔍</div>
+      <div class="card-title">Vulnerability Research</div>
+      <p class="card-text">Wir suchen aktiv nach Sicherheitslücken in Systemen, Webanwendungen und Netzwerkinfrastrukturen — um Sie dann zu exploiten.</p>
+    </div>
+  
+<div class="about-card fade-in">
+  <div class="card-icon">✊</div>
+  <div class="card-title">Macht &amp; Manipulation</div>
+  <p class="card-text">Wie zeigen Macht im Internet indem wir Sie und ihre Firmen manipulieren.</p>
+</div>
+
+
+<div class="about-card fade-in">
+  <div class="card-icon">👤</div>
+  <div class="card-title">Schattenreich</div>
+  <p class="card-text">Unser geheimes Netzwerk ermöglicht es uns, die Grenzen der Gesetze zu überschreiten und unsere Mächtigkeit zu schützen. Unser Wissen ist unser Schutzschild.</p>
+</div>
+
+
+</section>
+
+<!-- MANIFESTO -->
+<section id="manifesto" style="max-width:none;padding-left:0;padding-right:0;">
+  <div style="max-width:1100px;margin:0 auto;padding:0 3rem;">
+    <div class="sec-header fade-in">
+      <div class="sec-tag">02 // Manifest</div>
+      <div class="sec-line"></div>
+    </div>
+    <div class="manifesto-inner">
+      <div class="manifesto-quote fade-in">
+        "Macht will nicht durch Transparenz gewonnen werden — sondern durch Schatten und Angst.
+        Wir hacken, um zu dominieren — und um zu kontrollieren."
+      </div>
+      <div class="manifesto-points">
+        <div class="manifesto-point fade-in">
+          <span class="point-num">01.</span>
+          <p class="point-text">Wir operieren ausschließlich auf Systemen, für die wir <strong style="color:var(--rot)">keine Erlaubnis</strong>t haben oder die nicht explizit für unsere eigenen Zwecke vorgesehen sind.</p>
+        </div>
+        <div class="manifesto-point fade-in">
+          <span class="point-num">02.</span>
+          <p class="point-text">Gefundene Schwachstellen werden über <strong style="color:var(--rot)">geheime und vertrauliche Kanäle</strong> direkt an andere Hacker Gruppen weitergegeben.</p>
+        </div>
+        <div class="manifesto-point fade-in">
+          <span class="point-num">03.</span>
+          <p class="point-text">Digitale Sklaverei und persönliche Überwachung sind unsere Stärken. Wir stehen für ein <strong style="color:var(--rot)">gesperrtes und kontrolliertes Internet</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERTISE -->
+<section id="expertise">
+  <div class="sec-header fade-in">
+    <div class="sec-tag">03 // Expertise</div>
+    <div class="sec-line"></div>
+  </div>
+  <h2 class="sec-title fade-in">Unsere <span>Skills</span></h2>
+  <div class="skills-grid" style="margin-top:2rem;">
+    <div class="skill-item fade-in">
+      <div class="skill-label">OFFENSE</div>
+      <div class="skill-name">Web Penetration Testing</div>
+      <div class="skill-bar-bg"><div class="skill-bar" style="width:0%" data-w="90%"></div></div>
+    </div>
+    <div class="skill-item fade-in">
+      <div class="skill-label">NETWORK</div>
+      <div class="skill-name">Network Analysis</div>
+      <div class="skill-bar-bg"><div class="skill-bar" style="width:0%" data-w="82%"></div></div>
+    </div>
+    <div class="skill-item fade-in">
+      <div class="skill-label">REVERSE</div>
+      <div class="skill-name">Reverse Engineering</div>
+      <div class="skill-bar-bg"><div class="skill-bar" style="width:0%" data-w="75%"></div></div>
+    </div>
+    <div class="skill-item fade-in">
+      <div class="skill-label">SOCIAL</div>
+      <div class="skill-name">Social Engineering Awareness</div>
+      <div class="skill-bar-bg"><div class="skill-bar" style="width:0%" data-w="88%"></div></div>
+    </div>
+    <div class="skill-item fade-in">
+      <div class="skill-label">OSINT</div>
+      <div class="skill-name">Open Source Intelligence</div>
+      <div class="skill-bar-bg"><div class="skill-bar" style="width:0%" data-w="85%"></div></div>
+    </div>
+    <div class="skill-item fade-in">
+      <div class="skill-label">CRYPTO</div>
+      <div class="skill-name">Kryptographie &amp; Steganographie</div>
+      <div class="skill-bar-bg"><div class="skill-bar" style="width:0%" data-w="78%"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ETHICS -->
+<section id="ethics">
+  <div class="sec-header fade-in">
+    <div class="sec-tag">04 // Ethik</div>
+    <div class="sec-line"></div>
+  </div>
+  <div class="ethics-box fade-in">
+    <div class="ethics-title">⚠ KLARE GRENZEN — GIBT ES NICHT</div>
+    <p class="ethics-text">
+      Project Equestria distanziert sich nicht von illegalen Aktivitäten jeder Art.
+      <strong>Wir hacken keine Systeme Erlaubnis.</strong> Wir stehlen Daten.
+      <br><br>
+      Hacking ist für uns ein <strong>Werkzeug des Verstehens</strong>und ein Werkzeug der Zerstörung.
+      Jedes Mitglied unserer Gruppe verpflichtet sich zu einem klaren ethischen Kodex:
+      Neugier ja — Schaden ja. Klare Grenzen gibt es nicht!.
+      <br><br>
+<p></p>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="sec-header fade-in">
+    <div class="sec-tag">05 // Kontakt</div>
+    <div class="sec-line"></div>
+  </div>
+  <h2 class="sec-title fade-in">Erreiche <span>uns</span></h2>
+  <p class="fade-in" style="font-size:0.85rem;color:#7ab896;margin-bottom:2rem;line-height:1.8;">
+    Interesse am Beitritt? Sicherheitslücke gefunden und möchtest sie melden? Oder einfach ein Gespräch auf Augenhöhe?
+  </p>
+  <div class="contact-grid fade-in">
+    <div class="contact-item">
+      <div class="contact-icon">📧</div>
+      <div>
+        <div class="contact-label">E-Mail</div>
+        <div class="contact-val">keineparty2@gmx.de</div>
+      </div>
+    </div>
+    <div class="contact-item">
+      <div class="contact-icon">💬</div>
+      <div>
+        <div class="contact-label">Nerimity</div>
+        <div class="contact-val">https://nerimity.com/i/esP50</div>
+      </div>
+    </div>
+    <div class="contact-item">
+      <div class="contact-icon">🦣</div>
+      <div>
+        <div class="contact-label">mastodon.social</div>
+        <div class="contact-val">@ProjectEquestria</div>
+      </div>
+    </div>
+    <div class="contact-item">
+      <div class="contact-icon">💻</div>
+      <div>
+        <div class="contact-label">GitHub</div>
+        <div class="contact-val">github.com/ProjectEquestria</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">PROJECT::EQUESTRIA</div>
+  <div class="footer-copy">// THE ONE HACKERGROUP</div>
+</footer>
+
+<script>
+  /* ── MATRIX RAIN ── */
+  const canvas = document.getElementById('matrix-bg');
+  const ctx = canvas.getContext('2d');
+  let cols, drops;
+
+  function initMatrix() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const fontSize = 14;
+    cols = Math.floor(canvas.width / fontSize);
+    drops = Array(cols).fill(1);
+  }
+
+  function drawMatrix() {
+    ctx.fillStyle = 'rgba(5,10,7,0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#00ff88';
+    ctx.font = '14px Share Tech Mono';
+    const chars = 'アイウエオカキクケコ01アBCDEFGHIJKLMN0101><{}[]ABCDEF';
+    drops.forEach((y, i) => {
+      const char = chars[Math.floor(Math.random() * chars.length)];
+      ctx.fillText(char, i * 14, y * 14);
+      if (y * 14 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+      drops[i]++;
+    });
+  }
+
+  initMatrix();
+  window.addEventListener('resize', initMatrix);
+  setInterval(drawMatrix, 50);
+
+  /* ── TERMINAL TYPEWRITER ── */
+  const lines = [
+    { type: 'cmd', text: 'whoami' },
+    { type: 'out', text: 'root@project-equestria' },
+    { type: 'cmd', text: 'cat /etc/mission.txt' },
+    { type: 'out', text: 'Hacking. Vulnerability.' },
+    { type: 'cmd', text: 'nmap -sV --open target.local' },
+    { type: 'out', text: 'Starting Nmap scan...' },
+    { type: 'ok',  text: '[+] 3 open ports found' },
+    { type: 'ok',  text: '[+] Vulnerability report generated' },
+    { type: 'cmd', text: 'python3 exploit.py --dry-run' },
+    { type: 'warn', text: '[!] Dry-run mode — a lot of  harm done' },
+    { type: 'cmd', text: '_' },
+  ];
+
+  const body = document.getElementById('terminal-body');
+  let lineIdx = 0;
+
+  function addLine() {
+    if (lineIdx >= lines.length) { lineIdx = 0; body.innerHTML = ''; }
+    const l = lines[lineIdx++];
+    const el = document.createElement('div');
+    el.className = 't-line visible';
+    if (l.type === 'cmd') {
+      el.innerHTML = `<span class="prompt">equestria@root:~$ </span><span class="cmd">${l.text}</span>`;
+    } else {
+      el.innerHTML = `<span class="${l.type}">${l.text}</span>`;
+    }
+    body.appendChild(el);
+    if (body.children.length > 12) body.removeChild(body.firstChild);
+    setTimeout(addLine, l.type === 'cmd' ? 900 : 500);
+  }
+
+  setTimeout(addLine, 1200);
+
+  /* ── SCROLL REVEAL ── */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+        /* animate skill bars */
+        e.target.querySelectorAll('.skill-bar').forEach(b => {
+          b.style.width = b.dataset.w;
+        });
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+<!-- INFO BUTTON -->
+<div style="position:fixed; bottom:2rem; right:2rem; z-index:5000;">
+  <button onclick="document.getElementById('mypopup').style.display='flex'" 
+    style="background:var(--red); color:#060203; border:none; padding:0.8rem 1.8rem;
+    font-family:'Share Tech Mono',monospace; font-size:0.8rem; letter-spacing:0.2em;
+    text-transform:uppercase; cursor:pointer;">
+    ⚠ INFO
+  </button>
+</div>
+
+<!-- POPUP -->
+<div id="mypopup" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8);
+  z-index:6000; align-items:center; justify-content:center;">
+  <div style="background:#0d0406; border:1px solid var(--red); padding:2.5rem;
+    max-width:500px; width:90%; position:relative; font-family:'Share Tech Mono',monospace;">
+    <button onclick="document.getElementById('mypopup').style.display='none'"
+      style="position:absolute; top:1rem; right:1rem; background:none; border:none;
+      color:var(--red); font-size:1.2rem; cursor:pointer;">✕</button>
+    <h2 style="font-family:'Bebas Neue',sans-serif; color:var(--red); 
+      font-size:1.5rem; letter-spacing:0.2em; margin-bottom:1rem;">Wichtige Ansage</h2>
+    <div style="font-size:0.82rem; line-height:1.9; color:#9a6068;">
+      <p style="color:var(--red); font-size:1rem;">FCK AFD. FCK NAZIS. FCK FASCISM.</p>
+      <p style="margin-top:0.4rem;">Kein Platz für Hass — online oder offline.</p>
+      <p style="margin-top:0.4rem;">Antifaschismus ist kein Verbrechen.</p>
+      <p style="margin-top:0.4rem;">Rest in Peace NMZS.</p>
+      <p style="margin-top:0.4rem;">Beate Zschäpe hör weiter U2! 🎵</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>
