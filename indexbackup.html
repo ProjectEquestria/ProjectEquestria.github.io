@@ -544,61 +544,6 @@
     .contact-label { font-size: 0.65rem; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; }
     .contact-val { font-size: 0.85rem; color: var(--text); margin-top: 0.2rem; }
 
-    /* ── NOVA SPOTLIGHT ── */
-    .nova-card {
-      display: grid;
-      grid-template-columns: 220px 1fr;
-      gap: 2rem;
-      align-items: center;
-      border: 1px solid var(--border);
-      background: linear-gradient(135deg, rgba(0,255,136,0.08), rgba(0,255,136,0.02));
-      padding: 2rem;
-    }
-
-    .nova-photo {
-      width: 220px;
-      height: 220px;
-      border-radius: 20px;
-      object-fit: cover;
-      border: 1px solid var(--border);
-      box-shadow: 0 0 40px rgba(0,255,136,0.12);
-      background: rgba(0,255,136,0.05);
-    }
-
-    .nova-meta {
-      display: flex;
-      flex-direction: column;
-      gap: 0.9rem;
-    }
-
-    .nova-role {
-      font-size: 0.7rem;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: var(--green);
-    }
-
-    .nova-meta .sec-title {
-      margin-bottom: 0;
-    }
-
-    .nova-meta .card-text {
-      color: #7ab896;
-      max-width: 640px;
-    }
-
-    @media (max-width: 780px) {
-      .nova-card {
-        grid-template-columns: 1fr;
-      }
-
-      .nova-photo {
-        width: 100%;
-        max-width: 280px;
-        height: auto;
-      }
-    }
-
     /* ── FOOTER ── */
     footer {
       position: relative;
@@ -902,19 +847,6 @@
         <div class="contact-label">GitHub</div>
         <div class="contact-val">github.com/ProjectEquestria</div>
       </div>
-    </div>
-  </div>
-</section>
-
-<section id="nova" class="fade-in" style="padding-top: 1rem;">
-  <div class="nova-card">
-    <img src="nova.jpg" alt="Nova" class="nova-photo">
-    <div class="nova-meta">
-      <p class="nova-role">Leader</p>
-      <h2 class="sec-title">Nova <span>(Leader)</span></h2>
-      <p class="card-text">
-        Nova ist die leitende Figur von Project Equestria — die Stimme hinter der Operation, der Blick für Schwachstellen und der Motor hinter der digitalen Strategie.
-      </p>
     </div>
   </div>
 </section>
