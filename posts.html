@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Posts — Project Equestria</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#050a07;--panel:#0a1a10;--border:rgba(0,255,136,0.18);--green:#00ff88;--muted:#7ab896;--text:#c8ffd8}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;background:#050a07;color:var(--text);font-family:'Share Tech Mono',monospace}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at top left,rgba(0,255,136,0.12),transparent 40%),linear-gradient(180deg,rgba(0,255,136,0.04),transparent 60%);pointer-events:none;z-index:0}
+    .page{position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:3rem 1.5rem}
+    h1{font-family:'Orbitron',sans-serif;font-size:3rem;letter-spacing:0.18em;color:var(--green);margin-bottom:0.6rem}
+    .hero-text{max-width:760px;line-height:1.8;color:#9dd3ac;margin-bottom:2rem}
+    .panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;backdrop-filter:blur(12px)}
+    .panel.small{display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:center}
+    .panel label{display:block;font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;margin-bottom:.6rem}
+    .panel input,.panel textarea{width:100%;border:1px solid rgba(255,255,255,0.08);background:#06120b;color:var(--text);padding:0.9rem 1rem;border-radius:8px;font-family:'Share Tech Mono',monospace;resize:vertical;outline:none;transition:border-color 0.2s}
+    .panel input:focus,.panel textarea:focus{border-color:rgba(0,255,136,0.4)}
+    .panel textarea{min-height:140px}
+    .button{display:inline-flex;align-items:center;justify-content:center;padding:0.85rem 1.4rem;border:1px solid var(--green);color:var(--green);background:transparent;text-transform:uppercase;font-size:0.8rem;letter-spacing:0.2em;cursor:pointer;border-radius:8px;text-decoration:none;font-family:'Share Tech Mono',monospace;transition:background 0.2s}
+    .button:hover{background:rgba(0,255,136,0.08)}
+    .button:disabled{opacity:0.4;cursor:not-allowed}
+    .status{font-size:0.82rem;color:#8ad6af;margin-top:0.5rem;min-height:1.4rem}
+    .feed{display:grid;gap:1rem}
+    .post{background:rgba(0,255,136,0.04);border:1px solid rgba(0,255,136,0.12);border-radius:14px;padding:1.2rem;animation:fadeIn 0.3s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .post-header{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:0.8rem}
+    .post-email{color:var(--green);font-size:0.8rem;text-transform:uppercase;letter-spacing:.15em}
+    .post-time{color:#82d6ae;font-size:0.78rem}
+    .post-body{line-height:1.8;color:#c8ffd8;white-space:pre-wrap}
+    .hidden{display:none}
+    .top-row{display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;margin-bottom:1rem}
+    .back-link{color:var(--green);text-decoration:none;border:1px solid var(--green);padding:0.7rem 1rem;border-radius:8px;display:inline-block;font-family:'Share Tech Mono',monospace;transition:background 0.2s}
+    .back-link:hover{background:rgba(0,255,136,0.08)}
+    .info-box{color:#7ab896;font-size:0.85rem;line-height:1.7}
+    .loading{text-align:center;color:var(--muted);padding:2rem;font-size:0.85rem;letter-spacing:0.1em}
+    .mb{margin-bottom:1rem}
+    @media(max-width:720px){.panel.small{grid-template-columns:1fr}.top-row{flex-direction:column;align-items:flex-start}h1{font-size:2rem}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="top-row">
+      <a class="back-link" href="index.html">← Back</a>
+    </div>
+
+    <h1>Post Board</h1>
+    <p class="hero-text">Sign in with your email, write a message, and publish it to the feed. All posts are saved to Supabase.</p>
+
+    <!-- Auth Panel (nicht eingeloggt) -->
+    <div class="panel" id="auth-panel">
+      <div class="mb">
+        <label for="email-input">Email</label>
+        <input id="email-input" type="email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <button class="button" id="login-button">Send Magic Link</button>
+      <div class="status" id="auth-status">Sign in to create posts.</div>
+    </div>
+
+    <!-- Post Panel (eingeloggt) -->
+    <div class="panel hidden" id="post-panel">
+      <div class="panel small">
+        <div>
+          <label>Logged in as</label>
+          <div id="user-email" class="post-email"></div>
+        </div>
+        <button class="button" id="signout-button">Sign Out</button>
+      </div>
+      <div class="mb">
+        <label for="post-content">Write your post</label>
+        <textarea id="post-content" placeholder="Type a short message..."></textarea>
+      </div>
+      <button class="button" id="publish-button">Publish Post</button>
+      <div class="status" id="post-status"></div>
+    </div>
+
+    <h2 style="margin-top:2rem;font-family:'Orbitron',sans-serif;font-size:1.2rem;letter-spacing:0.12em;color:var(--green);">Latest Posts</h2>
+    <div id="feed" class="feed">
+      <div class="loading">Loading posts...</div>
+    </div>
+  </div>
+
+  <!-- Supabase UMD Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script>
+    // ============================================================
+    // 🔑 HIER deine Supabase-Daten eintragen
+    // Zu finden unter: Supabase → Settings → API
+    // ============================================================
+    const SUPABASE_URL     = 'https://DEINE-PROJEKT-URL.supabase.co';
+    const SUPABASE_ANON_KEY = 'DEIN_ANON_KEY';
+    // ============================================================
+
+    const { createClient } = window.supabase;
+    const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // --- DOM Elemente ---
+    const authPanel    = document.getElementById('auth-panel');
+    const postPanel    = document.getElementById('post-panel');
+    const authStatus   = document.getElementById('auth-status');
+    const postStatus   = document.getElementById('post-status');
+    const emailInput   = document.getElementById('email-input');
+    const userEmailEl  = document.getElementById('user-email');
+    const postContent  = document.getElementById('post-content');
+    const feed         = document.getElementById('feed');
+    const loginBtn     = document.getElementById('login-button');
+    const publishBtn   = document.getElementById('publish-button');
+    const signoutBtn   = document.getElementById('signout-button');
+
+    // --- Event Listener ---
+    loginBtn.addEventListener('click', sendMagicLink);
+    publishBtn.addEventListener('click', publishPost);
+    signoutBtn.addEventListener('click', signOut);
+
+    // --- Auth Funktionen ---
+    async function sendMagicLink() {
+      const email = emailInput.value.trim();
+      if (!email) {
+        setAuthStatus('Enter a valid email address.', true);
+        return;
+      }
+      loginBtn.disabled = true;
+      setAuthStatus('Sending sign-in link...', false);
+
+      const { error } = await sb.auth.signInWithOtp({
+        email,
+        options: {
+          // Wichtig: Redirect nach dem Klick auf den Magic Link
+          emailRedirectTo: window.location.href
+        }
+      });
+
+      loginBtn.disabled = false;
+      if (error) {
+        setAuthStatus(error.message, true);
+      } else {
+        setAuthStatus('✓ Magic link sent — check your email!', false);
+      }
+    }
+
+    async function signOut() {
+      await sb.auth.signOut();
+      setUser(null);
+      setAuthStatus('Signed out. Enter your email to sign in again.', false);
+    }
+
+    // --- UI Hilfsfunktionen ---
+    function setAuthStatus(msg, isError) {
+      authStatus.textContent = msg;
+      authStatus.style.color = isError ? '#ff5c5c' : '#8af7b6';
+    }
+
+    function setPostStatus(msg, isError) {
+      postStatus.textContent = msg;
+      postStatus.style.color = isError ? '#ff5c5c' : '#8af7b6';
+    }
+
+    function setUser(user) {
+      if (user) {
+        userEmailEl.textContent = user.email;
+        authPanel.classList.add('hidden');
+        postPanel.classList.remove('hidden');
+      } else {
+        authPanel.classList.remove('hidden');
+        postPanel.classList.add('hidden');
+      }
+    }
+
+    // --- Posts ---
+    async function publishPost() {
+      const content = postContent.value.trim();
+      if (!content) {
+        setPostStatus('Write something before publishing.', true);
+        return;
+      }
+
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) {
+        setPostStatus('You must be signed in to publish.', true);
+        return;
+      }
+
+      publishBtn.disabled = true;
+      setPostStatus('Publishing...', false);
+
+      const { error } = await sb.from('posts').insert([{
+        content,
+        user_email: session.user.email
+      }]);
+
+      publishBtn.disabled = false;
+
+      if (error) {
+        setPostStatus(error.message, true);
+      } else {
+        postContent.value = '';
+        setPostStatus('✓ Post published!', false);
+        loadPosts();
+      }
+    }
+
+    async function loadPosts() {
+      const { data, error } = await sb
+        .from('posts')
+        .select('id, content, user_email, created_at')
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (error) {
+        feed.innerHTML = '<div class="post">Unable to load posts.</div>';
+        return;
+      }
+
+      feed.innerHTML = data.length
+        ? data.map(renderPost).join('')
+        : '<div class="post" style="color:var(--muted)">No posts yet. Be the first!</div>';
+    }
+
+    function renderPost(post) {
+      const time = new Date(post.created_at).toLocaleString('de-DE', {
+        dateStyle: 'medium',
+        timeStyle: 'short'
+      });
+      return `
+        <div class="post">
+          <div class="post-header">
+            <div class="post-email">${escapeHtml(post.user_email || 'anonymous')}</div>
+            <div class="post-time">${time}</div>
+          </div>
+          <div class="post-body">${escapeHtml(post.content)}</div>
+        </div>`;
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // --- Auth State Listener ---
+    sb.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        setAuthStatus('Signed in. You can publish a post.', false);
+      }
+    });
+
+    // --- Beim Laden ---
+    (async () => {
+      const { data } = await sb.auth.getSession();
+      setUser(data.session?.user ?? null);
+      if (data.session?.user) {
+        setAuthStatus('Signed in. You can publish a post.', false);
+      }
+      loadPosts();
+    })();
+  </script>
+</body>
+</html>
