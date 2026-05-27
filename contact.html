@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PROJECT EQUESTRIA // KONTAKT</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐴</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=VT323&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green: #00ff88;
+      --green-dim: #00cc66;
+      --green-dark: #003322;
+      --red: #ff2255;
+      --cyan: #00eeff;
+      --bg: #050a07;
+      --bg2: #081008;
+      --panel: rgba(0,255,136,0.04);
+      --border: rgba(0,255,136,0.18);
+      --text: #c8ffd8;
+      --muted: #4a7a60;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Share Tech Mono', monospace;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.08) 2px,
+        rgba(0,0,0,0.08) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.25;
+      pointer-events: none;
+      z-index: 9998;
+    }
+
+    #matrix-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      opacity: 0.07;
+      z-index: 0;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 3rem;
+      height: 56px;
+      background: rgba(5,10,7,0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Orbitron', monospace;
+      font-weight: 900;
+      font-size: 1rem;
+      color: var(--green);
+      letter-spacing: 0.2em;
+      text-shadow: 0 0 20px var(--green);
+    }
+
+    .nav-logo span { color: var(--red); }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      transition: color 0.2s;
+      text-transform: uppercase;
+    }
+
+    .nav-links a:hover { color: var(--green); text-shadow: 0 0 10px var(--green); }
+
+    .lang-switch {
+      border: 1px solid var(--muted);
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .lang-switch:hover {
+      color: var(--green);
+      border-color: var(--green);
+    }
+
+    .section {
+      position: relative;
+      z-index: 1;
+      padding: 7rem 3rem 5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 7rem 4rem 4rem;
+    }
+
+    .hero-eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.35em;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      animation: fadeInUp 0.8s ease both;
+    }
+
+    .hero-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(3rem, 8vw, 7rem);
+      font-weight: 900;
+      line-height: 0.95;
+      color: var(--green);
+      text-shadow: 0 0 40px rgba(0,255,136,0.4), 0 0 80px rgba(0,255,136,0.15);
+      letter-spacing: -0.02em;
+      animation: fadeInUp 0.8s 0.1s ease both;
+      margin-bottom: 0.2em;
+    }
+
+    .hero-title .glitch {
+      position: relative;
+      display: inline-block;
+    }
+
+    .hero-title .glitch::before,
+    .hero-title .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      clip-path: polygon(0 30%, 100% 30%, 100% 55%, 0 55%);
+    }
+
+    .hero-title .glitch::before {
+      color: var(--red);
+      transform: translateX(-4px);
+      animation: glitch1 3s infinite;
+    }
+
+    .hero-title .glitch::after {
+      color: var(--cyan);
+      transform: translateX(4px);
+      animation: glitch2 3s infinite;
+    }
+
+    @keyframes glitch1 {
+      0%,90%,100% { clip-path: none; transform: translateX(0); opacity: 0; }
+      92% { clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%); transform: translateX(-6px); opacity: 1; }
+      94% { clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%); transform: translateX(3px); opacity: 1; }
+      96% { clip-path: none; opacity: 0; }
+    }
+
+    @keyframes glitch2 {
+      0%,90%,100% { clip-path: none; transform: translateX(0); opacity: 0; }
+      91% { clip-path: polygon(0 50%, 100% 50%, 100% 70%, 0 70%); transform: translateX(6px); opacity: 1; }
+      93% { clip-path: polygon(0 10%, 100% 10%, 100% 30%, 0 30%); transform: translateX(-3px); opacity: 1; }
+      95% { opacity: 0; }
+    }
+
+    .hero-subtitle {
+      font-family: 'VT323', monospace;
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      color: var(--cyan);
+      letter-spacing: 0.1em;
+      animation: fadeInUp 0.8s 0.2s ease both;
+      margin-bottom: 2.5rem;
+      text-shadow: 0 0 15px rgba(0,238,255,0.5);
+    }
+
+    .hero-desc {
+      max-width: 600px;
+      font-size: 0.88rem;
+      line-height: 1.8;
+      color: #7ab896;
+      animation: fadeInUp 0.8s 0.3s ease both;
+      margin-bottom: 3rem;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      animation: fadeInUp 0.8s 0.4s ease both;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      padding: 0.8rem 2rem;
+      background: transparent;
+      color: var(--green);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      transition: color 0.3s;
+    }
+
+    .btn-primary { border: 1px solid var(--green); }
+    .btn-secondary { border: 1px solid var(--muted); color: var(--muted); }
+
+    .btn-primary::before,
+    .btn-secondary::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--green);
+      transform: translateX(-101%);
+      transition: transform 0.3s ease;
+    }
+
+    .btn-primary:hover::before,
+    .btn-secondary:hover::before { transform: translateX(0); }
+    .btn-primary:hover { color: var(--bg); }
+    .btn-secondary:hover { color: var(--cyan); border-color: var(--cyan); }
+
+    .sec-header {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .sec-tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      color: var(--green);
+      text-transform: uppercase;
+      padding: 0.3rem 0.8rem;
+      border: 1px solid var(--green);
+      white-space: nowrap;
+    }
+
+    .sec-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+
+    .sec-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1rem;
+      letter-spacing: 0.05em;
+    }
+
+    .sec-title span { color: var(--green); }
+
+    .page-copy {
+      font-size: 0.88rem;
+      line-height: 1.9;
+      color: #7ab896;
+      max-width: 720px;
+      margin-bottom: 2rem;
+    }
+
+    .contact-form-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: stretch;
+    }
+
+    .contact-panel,
+    .contact-form {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 2rem;
+      min-height: 420px;
+    }
+
+    .contact-panel h3 {
+      font-family: 'Orbitron', monospace;
+      margin-bottom: 1rem;
+      color: var(--green);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 0.9rem;
+    }
+
+    .contact-panel p,
+    .contact-panel .meta-item {
+      font-size: 0.88rem;
+      line-height: 1.8;
+      color: #7ab896;
+    }
+
+    .meta-item {
+      margin-top: 1.2rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+
+    .meta-label {
+      color: var(--green);
+      min-width: 110px;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .meta-value { color: var(--text); }
+
+    .contact-form form {
+      display: grid;
+      gap: 1rem;
+      height: 100%;
+    }
+
+    .field-group {
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    label {
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 1rem;
+      border: 1px solid rgba(0,255,136,0.12);
+      background: rgba(0,255,136,0.04);
+      color: var(--text);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 2px rgba(0,255,136,0.1);
+    }
+
+    textarea {
+      min-height: 220px;
+      resize: vertical;
+    }
+
+    .submit-row {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 1rem;
+      margin-top: auto;
+    }
+
+    .mailto-fallback {
+      margin-top: 1.5rem;
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .mailto-fallback a {
+      width: fit-content;
+    }
+
+    .btn-submit {
+      padding: 0.95rem 1.8rem;
+      border: 1px solid var(--green);
+      background: transparent;
+      color: var(--green);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      cursor: pointer;
+      font-family: 'Share Tech Mono', monospace;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .btn-submit:hover {
+      background: var(--green);
+      color: var(--bg);
+    }
+
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 2rem 4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-brand {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.8rem;
+      color: var(--green);
+      letter-spacing: 0.2em;
+    }
+
+    .footer-copy {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    @media (max-width: 900px) {
+      .contact-form-wrapper { grid-template-columns: 1fr; }
+      nav { padding: 0 1.5rem; }
+      .section { padding: 7rem 1.5rem 5rem; }
+      footer { padding: 2rem 1.5rem; }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="matrix-bg"></canvas>
+
+<nav>
+  <div class="nav-logo">PROJECT<span>::</span>EQUESTRIA</div>
+  <ul class="nav-links">
+      <li><a id="nav-about" href="index.html#about">Über uns</a></li>
+      <li><a id="nav-manifest" href="index.html#manifesto">Manifest</a></li>
+      <li><a id="nav-skills" href="index.html#expertise">Skills</a></li>
+      <li><a id="nav-ethics" href="index.html#ethics">Ethik</a></li>
+      <li><a id="nav-contact" href="#contact">Kontakt</a></li>
+    </ul>
+    <div style="display:flex;align-items:center;gap:0.8rem;">
+      <button id="lang-switch" class="lang-switch" type="button">EN</button>
+      <a id="nav-back" href="index.html" class="btn-secondary">Zurück</a>
+    </div>
+</nav>
+
+<section id="hero" class="section">
+  <div id="heroEyebrow" class="hero-eyebrow">// KONTAKTIEREN SIE UNS</div>
+  <h1 class="hero-title">
+    <span id="heroTitleLine1" class="glitch" data-text="KONTAKT">KONTAKT</span><br>
+    <span id="heroTitleLine2">PROJECT EQUESTRIA</span>
+  </h1>
+  <p id="heroSubtitle" class="hero-subtitle">_ SCHREIB UNS EINE NACHRICHT</p>
+  <p id="heroDesc" class="hero-desc">
+    Nutze das Formular, um uns anonym eine Sicherheitslücke, eine Idee oder eine Anfrage zukommen zu lassen.
+    Wir melden uns schnellstmöglich zurück, wenn deine Nachricht relevant ist.
+  </p>
+  <div class="hero-btns">
+    <a id="hero-action" href="#contact" class="btn-primary">Formular öffnen</a>
+  </div>
+</section>
+
+<section id="contact" class="section">
+  <div class="sec-header">
+    <div id="sectionTag" class="sec-tag">05 // Kontakt</div>
+    <div class="sec-line"></div>
+  </div>
+  <h2 id="sectionTitle" class="sec-title">Kontaktformular <span id="sectionTitleSpan">Project Equestria</span></h2>
+  <p id="pageCopy" class="page-copy">
+    Hier kannst du uns sicher schreiben. Felder mit * sind optional, aber je mehr Details, desto besser.
+  </p>
+  <div class="contact-form-wrapper">
+    <div class="contact-panel">
+      <h3 id="panelHeading">Adressen</h3>
+      <p id="panelText">Für Hinweise, Angebote oder Kollaborationen kannst du uns bevorzugt per E-Mail oder verschlüsselter Nachricht erreichen.</p>
+      <div class="meta-item">
+        <div class="meta-label" id="metaEmailLabel">E-Mail</div>
+        <div class="meta-value">keineparty2@gmx.de</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label" id="metaNerimityLabel">Nerimity</div>
+        <div class="meta-value">https://nerimity.com/i/esP50</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label" id="metaMastodonLabel">Mastodon</div>
+        <div class="meta-value">@ProjectEquestria</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label" id="metaGitHubLabel">GitHub</div>
+        <div class="meta-value">github.com/ProjectEquestria</div>
+      </div>
+    </div>
+
+    <div class="contact-form">
+      <form id="contact-form">
+        <div class="field-group">
+          <label for="name" id="nameLabel">Name</label>
+          <input id="name" name="name" type="text" placeholder="Dein Name oder Nickname" />
+        </div>
+        <div class="field-group">
+          <label for="email" id="emailLabel">E-Mail</label>
+          <input id="email" name="email" type="email" placeholder="dein@email.de" />
+        </div>
+        <div class="field-group">
+          <label for="subject" id="subjectLabel">Betreff</label>
+          <input id="subject" name="subject" type="text" placeholder="z.B. Sicherheitsmeldung" data-placeholder-key="subjectPlaceholder" />
+        </div>
+        <div class="field-group">
+          <label for="message" id="messageLabel">Nachricht</label>
+          <textarea id="message" name="message" placeholder="Beschreibe dein Anliegen oder die entdeckte Schwachstelle..." data-placeholder-key="messagePlaceholder"></textarea>
+        </div>
+        <div class="submit-row">
+          <button type="submit" id="submitButton" class="btn-submit">Absenden</button>
+        </div>
+        <div class="mailto-fallback" id="mailto-fallback">
+          <p id="fallbackText">Falls kein E-Mail-Client öffnet, kopiere die Adresse oder nutze einen lokalen Mail-Client.</p>
+          <a id="mailto-link" class="btn-secondary" href="mailto:keineparty2@gmx.de">E-Mail senden</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-brand">PROJECT::EQUESTRIA</div>
+  <div id="footer-copy" class="footer-copy">// KONTAKTSEITE</div>
+</footer>
+
+<script>
+  const canvas = document.getElementById('matrix-bg');
+  const ctx = canvas.getContext('2d');
+  let cols, drops;
+
+  function initMatrix() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const fontSize = 14;
+    cols = Math.floor(canvas.width / fontSize);
+    drops = Array(cols).fill(1);
+  }
+
+  function drawMatrix() {
+    ctx.fillStyle = 'rgba(5,10,7,0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#00ff88';
+    ctx.font = '14px Share Tech Mono';
+    const chars = 'アイウエオカキクケコ01アBCDEFGHIJKLMN0101><{}[]ABCDEF';
+    drops.forEach((y, i) => {
+      const char = chars[Math.floor(Math.random() * chars.length)];
+      ctx.fillText(char, i * 14, y * 14);
+      if (y * 14 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+      drops[i]++;
+    });
+  }
+
+  initMatrix();
+  window.addEventListener('resize', initMatrix);
+  setInterval(drawMatrix, 50);
+
+  const translations = {
+    de: {
+      pageTitle: 'PROJECT EQUESTRIA // KONTAKT',
+      langSwitch: 'EN',
+      navAbout: 'Über uns',
+      navManifest: 'Manifest',
+      navSkills: 'Skills',
+      navEthics: 'Ethik',
+      navContact: 'Kontakt',
+      navBack: 'Zurück',
+      heroEyebrow: '// KONTAKTIEREN SIE UNS',
+      heroTitleLine1: 'KONTAKT',
+      heroTitleLine2: 'PROJECT EQUESTRIA',
+      heroSubtitle: '_ SCHREIB UNS EINE NACHRICHT',
+      heroDesc: 'Nutze das Formular, um uns anonym eine Sicherheitslücke, eine Idee oder eine Anfrage zukommen zu lassen. Wir melden uns schnellstmöglich zurück, wenn deine Nachricht relevant ist.',
+      heroBtn: 'Formular öffnen',
+      sectionTag: '05 // Kontakt',
+      sectionTitle: 'Kontaktformular',
+      sectionTitleSpan: 'Project Equestria',
+      pageCopy: 'Hier kannst du uns sicher schreiben. Felder mit * sind optional, aber je mehr Details, desto besser.',
+      panelHeading: 'Adressen',
+      panelText: 'Für Hinweise, Angebote oder Kollaborationen kannst du uns bevorzugt per E-Mail oder verschlüsselter Nachricht erreichen.',
+      metaEmailLabel: 'E-Mail',
+      metaNerimityLabel: 'Nerimity',
+      metaMastodonLabel: 'Mastodon',
+      metaGitHubLabel: 'GitHub',
+      nameLabel: 'Name',
+      namePlaceholder: 'Dein Name oder Nickname',
+      emailLabel: 'E-Mail',
+      emailPlaceholder: 'dein@email.de',
+      subjectLabel: 'Betreff',
+      subjectPlaceholder: 'z.B. Sicherheitsmeldung',
+      messageLabel: 'Nachricht',
+      messagePlaceholder: 'Beschreibe dein Anliegen oder die entdeckte Schwachstelle...',
+      submitButton: 'Absenden',
+      fallbackText: 'Falls kein E-Mail-Client öffnet, kopiere die Adresse oder nutze einen lokalen Mail-Client.',
+      fallbackLink: 'E-Mail senden',
+      footerCopy: '// KONTAKTSEITE'
+    },
+    en: {
+      pageTitle: 'PROJECT EQUESTRIA // CONTACT',
+      langSwitch: 'DE',
+      navAbout: 'About',
+      navManifest: 'Manifest',
+      navSkills: 'Skills',
+      navEthics: 'Ethics',
+      navContact: 'Contact',
+      navBack: 'Back',
+      heroEyebrow: '// CONTACT US',
+      heroTitleLine1: 'CONTACT',
+      heroTitleLine2: 'PROJECT EQUESTRIA',
+      heroSubtitle: '_ SEND US A MESSAGE',
+      heroDesc: 'Use the form to send us an anonymous vulnerability, idea, or request. We will reply as soon as your message is relevant.',
+      heroBtn: 'Open form',
+      sectionTag: '05 // Contact',
+      sectionTitle: 'Contact form',
+      sectionTitleSpan: 'Project Equestria',
+      pageCopy: 'You can write to us securely here. Fields marked * are optional, but the more detail, the better.',
+      panelHeading: 'Addresses',
+      panelText: 'For tips, offers or collaborations, you can reach us preferably by email or encrypted message.',
+      metaEmailLabel: 'Email',
+      metaNerimityLabel: 'Nerimity',
+      metaMastodonLabel: 'Mastodon',
+      metaGitHubLabel: 'GitHub',
+      nameLabel: 'Name',
+      namePlaceholder: 'Your name or nickname',
+      emailLabel: 'Email',
+      emailPlaceholder: 'your@email.com',
+      subjectLabel: 'Subject',
+      subjectPlaceholder: 'e.g. security report',
+      messageLabel: 'Message',
+      messagePlaceholder: 'Describe your request or the discovered vulnerability...',
+      submitButton: 'Send',
+      fallbackText: 'If no email client opens, copy the address or use a local mail client.',
+      fallbackLink: 'Send email',
+      footerCopy: '// CONTACT PAGE'
+    }
+  };
+
+  const translationMap = [
+    { selector: '#panelHeading', key: 'panelHeading', attr: 'textContent' },
+    { selector: '#panelText', key: 'panelText', attr: 'textContent' },
+    { selector: '#metaEmailLabel', key: 'metaEmailLabel', attr: 'textContent' },
+    { selector: '#metaNerimityLabel', key: 'metaNerimityLabel', attr: 'textContent' },
+    { selector: '#metaMastodonLabel', key: 'metaMastodonLabel', attr: 'textContent' },
+    { selector: '#metaGitHubLabel', key: 'metaGitHubLabel', attr: 'textContent' },
+    { selector: '#nameLabel', key: 'nameLabel', attr: 'textContent' },
+    { selector: '#emailLabel', key: 'emailLabel', attr: 'textContent' },
+    { selector: '#subjectLabel', key: 'subjectLabel', attr: 'textContent' },
+    { selector: '#messageLabel', key: 'messageLabel', attr: 'textContent' },
+    { selector: '#lang-switch', key: 'langSwitch', attr: 'textContent' },
+    { selector: '#nav-about', key: 'navAbout', attr: 'textContent' },
+    { selector: '#nav-manifest', key: 'navManifest', attr: 'textContent' },
+    { selector: '#nav-skills', key: 'navSkills', attr: 'textContent' },
+    { selector: '#nav-ethics', key: 'navEthics', attr: 'textContent' },
+    { selector: '#nav-contact', key: 'navContact', attr: 'textContent' },
+    { selector: '#nav-back', key: 'navBack', attr: 'textContent' },
+    { selector: '.hero-eyebrow', key: 'heroEyebrow', attr: 'textContent' },
+    { selector: '#heroTitleLine1', key: 'heroTitleLine1', attr: 'textContent' },
+    { selector: '#heroTitleLine2', key: 'heroTitleLine2', attr: 'textContent' },
+    { selector: '#heroSubtitle', key: 'heroSubtitle', attr: 'textContent' },
+    { selector: '#heroDesc', key: 'heroDesc', attr: 'textContent' },
+    { selector: '#hero-action', key: 'heroBtn', attr: 'textContent' },
+    { selector: '#sectionTag', key: 'sectionTag', attr: 'textContent' },
+    { selector: '#sectionTitle', key: 'sectionTitle', attr: 'textContent' },
+    { selector: '#sectionTitleSpan', key: 'sectionTitleSpan', attr: 'textContent' },
+    { selector: '#pageCopy', key: 'pageCopy', attr: 'textContent' },
+    { selector: '#footer-copy', key: 'footerCopy', attr: 'textContent' },
+    { selector: '#fallbackText', key: 'fallbackText', attr: 'textContent' },
+    { selector: '#mailto-link', key: 'fallbackLink', attr: 'textContent' }
+  ];
+
+  const placeholderMap = [
+    { selector: '#name', key: 'namePlaceholder' },
+    { selector: '#email', key: 'emailPlaceholder' },
+    { selector: '#subject', key: 'subjectPlaceholder' },
+    { selector: '#message', key: 'messagePlaceholder' }
+  ];
+
+  function applyTranslations(language) {
+    const locale = translations[language] || translations.de;
+    document.documentElement.lang = language;
+    document.title = locale.pageTitle;
+
+    translationMap.forEach((entry) => {
+      const element = document.querySelector(entry.selector);
+      if (!element) return;
+      element[entry.attr] = locale[entry.key];
+      if (entry.selector === '#heroTitleLine1') {
+        element.dataset.text = locale[entry.key];
+      }
+    });
+
+    placeholderMap.forEach((entry) => {
+      const element = document.querySelector(entry.selector);
+      if (!element) return;
+      element.placeholder = locale[entry.key];
+    });
+  }
+
+  function getSavedLanguage() {
+    return localStorage.getItem('contactLang') || 'de';
+  }
+
+  function saveLanguage(language) {
+    localStorage.setItem('contactLang', language);
+  }
+
+  function toggleLanguage() {
+    const current = getSavedLanguage();
+    const next = current === 'de' ? 'en' : 'de';
+    saveLanguage(next);
+    applyTranslations(next);
+  }
+
+  const langSwitch = document.getElementById('lang-switch');
+  if (langSwitch) {
+    langSwitch.addEventListener('click', toggleLanguage);
+  }
+
+  applyTranslations(getSavedLanguage());
+
+  const contactForm = document.getElementById('contact-form');
+  const mailtoLink = document.getElementById('mailto-link');
+  if (contactForm) {
+    contactForm.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const subject = document.getElementById('subject').value.trim() || 'Kontaktanfrage von Project Equestria';
+      const message = document.getElementById('message').value.trim();
+      const body = `Name: ${name || 'nicht angegeben'}\nE-Mail: ${email || 'nicht angegeben'}\n\nNachricht:\n${message || 'Keine Nachricht'}\n`;
+      const mailto = `mailto:keineparty2@gmx.de?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      if (mailtoLink) {
+        mailtoLink.href = mailto;
+      }
+      window.location.href = mailto;
+    });
+  }
+</script>
+</body>
+</html>
