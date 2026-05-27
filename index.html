@@ -658,6 +658,58 @@
     ::-webkit-scrollbar-track { background: var(--bg); }
     ::-webkit-scrollbar-thumb { background: var(--green); border-radius: 2px; }
 
+    /* ── COOKIE BANNER ── */
+    #cookie-banner {
+      position: fixed;
+      left: 1rem;
+      right: 1rem;
+      bottom: 1rem;
+      z-index: 10010;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      align-items: center;
+      background: rgba(4, 8, 12, 0.94);
+      border: 1px solid rgba(0,255,136,0.2);
+      padding: 1rem 1.25rem;
+      border-radius: 16px;
+      box-shadow: 0 0 60px rgba(0,255,136,0.12);
+      color: #e9f9ee;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      backdrop-filter: blur(14px);
+    }
+
+    #cookie-banner p {
+      margin: 0;
+      color: #c8ffd8;
+    }
+
+    #cookie-banner button {
+      border: 1px solid rgba(0,255,136,0.28);
+      background: rgba(0,255,136,0.08);
+      color: #d7ffdc;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      cursor: pointer;
+      font-family: 'Share Tech Mono', monospace;
+      letter-spacing: 0.12em;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    #cookie-banner button:hover {
+      transform: translateY(-1px);
+      background: rgba(0,255,136,0.16);
+    }
+
+    #cookie-banner.hide {
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(20px);
+      transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+    }
+
     /* ── HORIZONTAL TICKER ── */
     .ticker-wrap {
       position: relative; z-index: 1;
@@ -780,21 +832,21 @@
   <div class="about-grid">
     <div class="about-card fade-in">
       <div class="card-icon">🔍</div>
-      <div class="card-title">Vulnerability Research</div>
-      <p class="card-text">Wir suchen aktiv nach Sicherheitslücken in Systemen, Webanwendungen und Netzwerkinfrastrukturen — um Sie dann zu exploiten.</p>
+      <div class="card-title" id="about-card1-title">Vulnerability Research</div>
+      <p class="card-text" id="about-card1-text">Wir suchen aktiv nach Sicherheitslücken in Systemen, Webanwendungen und Netzwerkinfrastrukturen — um Sie dann zu exploiten.</p>
     </div>
   
 <div class="about-card fade-in">
   <div class="card-icon">✊</div>
-  <div class="card-title">Macht &amp; Manipulation</div>
-  <p class="card-text">Wie zeigen Macht im Internet indem wir Sie und ihre Firmen manipulieren.</p>
+  <div class="card-title" id="about-card2-title">Macht &amp; Manipulation</div>
+  <p class="card-text" id="about-card2-text">Wie zeigen Macht im Internet indem wir Sie und ihre Firmen manipulieren.</p>
 </div>
 
 
 <div class="about-card fade-in">
   <div class="card-icon">👤</div>
-  <div class="card-title">Schattenreich</div>
-  <p class="card-text">Unser geheimes Netzwerk ermöglicht es uns, die Grenzen der Gesetze zu überschreiten und unsere Mächtigkeit zu schützen. Unser Wissen ist unser Schutzschild.</p>
+  <div class="card-title" id="about-card3-title">Schattenreich</div>
+  <p class="card-text" id="about-card3-text">Unser geheimes Netzwerk ermöglicht es uns, die Grenzen der Gesetze zu überschreiten und unsere Mächtigkeit zu schützen. Unser Wissen ist unser Schutzschild.</p>
 </div>
 
 
@@ -815,15 +867,15 @@
       <div class="manifesto-points">
         <div class="manifesto-point fade-in">
           <span class="point-num">01.</span>
-          <p class="point-text">Wir operieren ausschließlich auf Systemen, für die wir <strong style="color:var(--rot)">keine Erlaubnis</strong>t haben oder die nicht explizit für unsere eigenen Zwecke vorgesehen sind.</p>
+          <p class="point-text" id="manifest-point1">Wir operieren ausschließlich auf Systemen, für die wir <strong style="color:var(--rot)">keine Erlaubnis</strong> haben oder die nicht explizit für unsere eigenen Zwecke vorgesehen sind.</p>
         </div>
         <div class="manifesto-point fade-in">
           <span class="point-num">02.</span>
-          <p class="point-text">Gefundene Schwachstellen werden über <strong style="color:var(--rot)">geheime und vertrauliche Kanäle</strong> direkt an andere Hacker Gruppen weitergegeben.</p>
+          <p class="point-text" id="manifest-point2">Gefundene Schwachstellen werden über <strong style="color:var(--rot)">geheime und vertrauliche Kanäle</strong> direkt an andere Hacker Gruppen weitergegeben.</p>
         </div>
         <div class="manifesto-point fade-in">
           <span class="point-num">03.</span>
-          <p class="point-text">Digitale Sklaverei und persönliche Überwachung sind unsere Stärken. Wir stehen für ein <strong style="color:var(--rot)">gesperrtes und kontrolliertes Internet</strong>.</p>
+          <p class="point-text" id="manifest-point3">Digitale Sklaverei und persönliche Überwachung sind unsere Stärken. Wir stehen für ein <strong style="color:var(--rot)">gesperrtes und kontrolliertes Internet</strong>.</p>
         </div>
       </div>
     </div>
@@ -836,7 +888,7 @@
     <div id="expertise-tag" class="sec-tag">03 // Expertise</div>
     <div class="sec-line"></div>
   </div>
-  <h2 id="expertise-title" class="sec-title fade-in">Unsere <span id="expertise-title-span">Skills</span></h2>
+  <h2 id="expertise-title" class="sec-title fade-in"><span id="expertise-title-prefix">Unsere</span> <span id="expertise-title-span">Skills</span></h2>
   <div class="skills-grid" style="margin-top:2rem;">
     <div class="skill-item fade-in">
       <div class="skill-label">OFFENSE</div>
@@ -865,7 +917,7 @@
     </div>
     <div class="skill-item fade-in">
       <div class="skill-label">CRYPTO</div>
-      <div class="skill-name">Kryptographie &amp; Steganographie</div>
+      <div class="skill-name">Cryptography &amp; Steganography</div>
       <div class="skill-bar-bg"><div class="skill-bar" style="width:0%" data-w="78%"></div></div>
     </div>
   </div>
@@ -897,7 +949,7 @@
     <div id="contact-tag" class="sec-tag">05 // Kontakt</div>
     <div class="sec-line"></div>
   </div>
-  <h2 id="contact-title" class="sec-title fade-in">Erreiche <span id="contact-title-span">uns</span></h2>
+  <h2 id="contact-title" class="sec-title fade-in"><span id="contact-title-prefix">Erreiche</span> <span id="contact-title-span">uns</span></h2>
   <p id="contact-desc" class="fade-in" style="font-size:0.85rem;color:#7ab896;margin-bottom:2rem;line-height:1.8;">
     Interesse am Beitritt? Sicherheitslücke gefunden und möchtest sie melden? Dann folge dem Link zur Kontaktseite.
   </p>
@@ -910,9 +962,9 @@
   <div class="nova-card">
     <img src="nova.jpg" alt="Nova" class="nova-photo">
     <div class="nova-meta">
-      <p class="nova-role">Leader</p>
-      <h2 class="sec-title">Nova <span>(Leader)</span></h2>
-      <p class="card-text">
+      <p class="nova-role" id="nova-role">Leader</p>
+      <h2 class="sec-title" id="nova-name">Nova <span id="nova-name-role">(Leader)</span></h2>
+      <p class="card-text" id="nova-desc">
         Nova ist die leitende Figur von Project Equestria — die Stimme hinter der Operation, der Blick für Schwachstellen und der Motor hinter der digitalen Strategie.
       </p>
     </div>
@@ -1111,7 +1163,20 @@
       contactTitleSpan: 'uns',
       contactDesc: 'Interesse am Beitritt? Sicherheitslücke gefunden und möchtest sie melden? Dann folge dem Link zur Kontaktseite.',
       contactButton: 'Zur Kontaktseite',
-      footerCopy: '// THE ONE HACKERGROUP'
+      footerCopy: '// THE ONE HACKERGROUP',
+      aboutCard1Title: 'Vulnerability Research',
+      aboutCard1Text: 'Wir suchen aktiv nach Sicherheitslücken in Systemen, Webanwendungen und Netzwerkinfrastrukturen — um Sie dann zu exploiten.',
+      aboutCard2Title: 'Macht & Manipulation',
+      aboutCard2Text: 'Wie zeigen Macht im Internet indem wir Sie und ihre Firmen manipulieren.',
+      aboutCard3Title: 'Schattenreich',
+      aboutCard3Text: 'Unser geheimes Netzwerk ermöglicht es uns, die Grenzen der Gesetze zu überschreiten und unsere Mächtigkeit zu schützen. Unser Wissen ist unser Schutzschild.',
+      manifestPoint1: 'Wir operieren ausschließlich auf Systemen, für die wir keine Erlaubnis haben oder die nicht explizit für unsere eigenen Zwecke vorgesehen sind.',
+      manifestPoint2: 'Gefundene Schwachstellen werden über geheime und vertrauliche Kanäle direkt an andere Hacker Gruppen weitergegeben.',
+      manifestPoint3: 'Digitale Sklaverei und persönliche Überwachung sind unsere Stärken. Wir stehen für ein gesperrtes und kontrolliertes Internet.',
+      novaRole: 'Leader',
+      novaDesc: 'Nova ist die leitende Figur von Project Equestria — die Stimme hinter der Operation, der Blick für Schwachstellen und der Motor hinter der digitalen Strategie.',
+      cookieButtonText: 'Akzeptieren',
+      cookieText: 'Project Equestria nutzt Cookies um dein Browsing-Erlebnis zu verbessern. Wenn du fortfährst, akzeptierst du unsere Cookie-Richtlinie.'
     },
     en: {
       pageTitle: 'PROJECT EQUESTRIA // COLLECTIVE',
@@ -1145,7 +1210,21 @@
       contactTitleSpan: 'us',
       contactDesc: 'Interested in joining? Found a vulnerability and want to report it? Then follow the link to the contact page.',
       contactButton: 'To contact page',
-      footerCopy: '// THE ONE HACKERGROUP'
+      footerCopy: '// THE ONE HACKERGROUP',
+      aboutCard1Title: 'Vulnerability Research',
+      aboutCard1Text: 'We actively search for security vulnerabilities in systems, web applications and network infrastructures — to exploit them.',
+      aboutCard2Title: 'Power & Manipulation',
+      aboutCard2Text: 'We demonstrate power on the Internet by manipulating you and your companies.',
+      aboutCard3Title: 'Shadow Realm',
+      aboutCard3Text: 'Our secret network allows us to cross the boundaries of law and protect our power. Our knowledge is our shield.',
+      manifestPoint1: 'We operate exclusively on systems for which we have no permission or which are not explicitly intended for our own purposes.',
+      manifestPoint2: 'Discovered vulnerabilities are passed directly to other hacker groups through secret and confidential channels.',
+      manifestPoint3: 'Digital slavery and personal surveillance are our strengths. We stand for a locked and controlled Internet.',
+      novaRole: 'Leader',
+      novaName: 'Nova',
+      novaDesc: 'Nova is the leading figure of Project Equestria — the voice behind the operation, the eye for vulnerabilities and the engine behind the digital strategy.',
+      cookieText: 'Project Equestria uses cookies to improve your browsing experience. By continuing, you accept our cookie policy.',
+      cookieButtonText: 'Accept'
     }
   };
 
@@ -1180,7 +1259,22 @@
     { selector: '#contact-title-span', key: 'contactTitleSpan', attr: 'textContent' },
     { selector: '#contact-desc', key: 'contactDesc', attr: 'textContent' },
     { selector: '#contact-button', key: 'contactButton', attr: 'textContent' },
-    { selector: '#footer-copy', key: 'footerCopy', attr: 'textContent' }
+    { selector: '#footer-copy', key: 'footerCopy', attr: 'textContent' },
+    { selector: '#about-card1-title', key: 'aboutCard1Title', attr: 'textContent' },
+    { selector: '#about-card1-text', key: 'aboutCard1Text', attr: 'textContent' },
+    { selector: '#about-card2-title', key: 'aboutCard2Title', attr: 'textContent' },
+    { selector: '#about-card2-text', key: 'aboutCard2Text', attr: 'textContent' },
+    { selector: '#about-card3-title', key: 'aboutCard3Title', attr: 'textContent' },
+    { selector: '#about-card3-text', key: 'aboutCard3Text', attr: 'textContent' },
+    { selector: '#manifest-point1', key: 'manifestPoint1', attr: 'textContent' },
+    { selector: '#manifest-point2', key: 'manifestPoint2', attr: 'textContent' },
+    { selector: '#manifest-point3', key: 'manifestPoint3', attr: 'textContent' },
+    { selector: '#nova-role', key: 'novaRole', attr: 'textContent' },
+    { selector: '#nova-name', key: 'novaName', attr: 'textContent' },
+    { selector: '#nova-name-role', key: 'novaRole', attr: 'textContent' },
+    { selector: '#nova-desc', key: 'novaDesc', attr: 'textContent' },
+    { selector: '#cookie-text', key: 'cookieText', attr: 'textContent' },
+    { selector: '#cookie-accept', key: 'cookieButtonText', attr: 'textContent' }
   ];
 
   function applyTranslations(lang) {
@@ -1245,5 +1339,30 @@
     </div>
   </div>
 </div>
+
+<div id="cookie-banner" class="hide">
+  <p id="cookie-text">Project Equestria uses cookies to improve your browsing experience. By continuing, you accept our cookie policy.</p>
+  <button id="cookie-accept">Akzeptieren</button>
+</div>
+
+<script>
+  const cookieBanner = document.getElementById('cookie-banner');
+  const cookieAccept = document.getElementById('cookie-accept');
+  const cookieKey = 'equestria_cookie_consent';
+
+  function showCookieBanner() {
+    if (!localStorage.getItem(cookieKey)) {
+      cookieBanner.classList.remove('hide');
+    }
+  }
+
+  function acceptCookies() {
+    localStorage.setItem(cookieKey, 'true');
+    cookieBanner.classList.add('hide');
+  }
+
+  cookieAccept.addEventListener('click', acceptCookies);
+  showCookieBanner();
+</script>
 </body>
 </html>
