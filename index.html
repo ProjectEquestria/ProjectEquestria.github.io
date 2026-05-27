@@ -301,6 +301,52 @@
 
     .btn-secondary:hover { border-color: var(--cyan); color: var(--cyan); }
 
+    .explore-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .explore-card {
+      background: rgba(0,255,136,0.04);
+      border: 1px solid rgba(0,255,136,0.18);
+      border-radius: 12px;
+      padding: 1.4rem;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .explore-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 24px 60px rgba(0,255,136,0.12);
+    }
+
+    .explore-card h3 {
+      margin-bottom: 1rem;
+      font-size: 1.05rem;
+      color: var(--green);
+    }
+
+    .explore-card p {
+      color: #9fcba3;
+      line-height: 1.7;
+      margin-bottom: 1.2rem;
+      flex-grow: 1;
+    }
+
+    .explore-card a {
+      color: var(--green);
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
     /* ── TERMINAL ANIMATION ── */
     .terminal-block {
       position: absolute;
@@ -919,6 +965,32 @@
       <div class="skill-label">CRYPTO</div>
       <div class="skill-name">Cryptography &amp; Steganography</div>
       <div class="skill-bar-bg"><div class="skill-bar" style="width:0%" data-w="78%"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPLORE -->
+<section id="explore">
+  <div class="sec-header fade-in">
+    <div class="sec-tag">EX // Explore</div>
+    <div class="sec-line"></div>
+  </div>
+  <h2 class="sec-title fade-in">Additional <span>Pages</span></h2>
+  <div class="explore-grid fade-in">
+    <div class="explore-card">
+      <h3>Terminal Demo</h3>
+      <p>Open a stylized hacker terminal with typewriter commands and a demo interaction.</p>
+      <a href="terminal.html">Enter Terminal →</a>
+    </div>
+    <div class="explore-card">
+      <h3>Visual Gallery</h3>
+      <p>Browse artful cards and visual experiments inspired by the collective.</p>
+      <a href="gallery.html">View Gallery →</a>
+    </div>
+    <div class="explore-card">
+      <h3>Lost in Space</h3>
+      <p>Experience a neon 404-style page that fits the universe aesthetic.</p>
+      <a href="404.html">Visit 404 →</a>
     </div>
   </div>
 </section>
