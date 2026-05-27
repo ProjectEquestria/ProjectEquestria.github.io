@@ -19,6 +19,19 @@
     .panel input,.panel textarea{width:100%;border:1px solid rgba(255,255,255,0.08);background:#06120b;color:var(--text);padding:0.9rem 1rem;border-radius:8px;font-family:'Share Tech Mono',monospace;resize:vertical;outline:none;transition:border-color 0.2s}
     .panel input:focus,.panel textarea:focus{border-color:rgba(0,255,136,0.4)}
     .panel textarea{min-height:140px}
+    .profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+    .avatar-preview{width:72px;height:72px;border-radius:50%;border:1px solid rgba(0,255,136,0.18);object-fit:cover;display:block;margin-bottom:1rem}
+    .avatar-preview.hidden{display:none}
+    .user-card{display:flex;align-items:center;gap:1rem}
+    .user-card .avatar-preview{width:52px;height:52px}
+    .post-meta{display:flex;align-items:center;gap:0.85rem}
+    .post-avatar{width:40px;height:40px;border-radius:50%;background:rgba(0,255,136,0.12);overflow:hidden;display:grid;place-items:center;flex-shrink:0}
+    .post-avatar img{width:100%;height:100%;object-fit:cover}
+    .post-avatar.default{color:var(--green);font-size:0.9rem;font-weight:700}
+    .post-author{display:flex;flex-direction:column;min-width:0}
+    .post-name{font-size:0.95rem;color:var(--green);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .post-email{font-size:0.8rem;color:#82d6ae;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .post-time{color:#82d6ae;font-size:0.78rem}
     .button{display:inline-flex;align-items:center;justify-content:center;padding:0.85rem 1.4rem;border:1px solid var(--green);color:var(--green);background:transparent;text-transform:uppercase;font-size:0.8rem;letter-spacing:0.2em;cursor:pointer;border-radius:8px;text-decoration:none;font-family:'Share Tech Mono',monospace;transition:background 0.2s}
     .button:hover{background:rgba(0,255,136,0.08)}
     .button:disabled{opacity:0.4;cursor:not-allowed}
@@ -62,12 +75,28 @@
     <!-- Post Panel (eingeloggt) -->
     <div class="panel hidden" id="post-panel">
       <div class="panel small">
-        <div>
-          <label>Logged in as</label>
-          <div id="user-email" class="post-email"></div>
+        <div class="user-card">
+          <img id="user-avatar" class="avatar-preview" src="" alt="Profile picture" aria-hidden="true">
+          <div>
+            <label>Logged in as</label>
+            <div id="user-email" class="post-email"></div>
+            <div id="user-name" class="post-time"></div>
+          </div>
         </div>
         <button class="button" id="signout-button">Sign Out</button>
       </div>
+      <div class="profile-grid">
+        <div>
+          <label for="display-name">Display Name</label>
+          <input id="display-name" type="text" placeholder="Nova">
+        </div>
+        <div>
+          <label for="avatar-url">Avatar URL</label>
+          <input id="avatar-url" type="url" placeholder="https://example.com/avatar.jpg">
+        </div>
+      </div>
+      <img id="avatar-preview" class="avatar-preview hidden" src="" alt="Avatar preview">
+      <div class="status" id="profile-status">Profile settings are saved locally.</div>
       <div class="mb">
         <label for="post-content">Write your post</label>
         <textarea id="post-content" placeholder="Type a short message..."></textarea>
@@ -103,6 +132,12 @@
     const postStatus   = document.getElementById('post-status');
     const emailInput   = document.getElementById('email-input');
     const userEmailEl  = document.getElementById('user-email');
+    const userNameEl   = document.getElementById('user-name');
+    const userAvatarEl = document.getElementById('user-avatar');
+    const displayNameInput = document.getElementById('display-name');
+    const avatarUrlInput   = document.getElementById('avatar-url');
+    const avatarPreview    = document.getElementById('avatar-preview');
+    const profileStatus    = document.getElementById('profile-status');
     const postContent  = document.getElementById('post-content');
     const feed         = document.getElementById('feed');
     const loginBtn     = document.getElementById('login-button');
@@ -113,6 +148,9 @@
     loginBtn.addEventListener('click', sendMagicLink);
     publishBtn.addEventListener('click', publishPost);
     signoutBtn.addEventListener('click', signOut);
+    displayNameInput.addEventListener('change', saveProfile);
+    avatarUrlInput.addEventListener('change', saveProfile);
+    avatarUrlInput.addEventListener('input', updateAvatarPreview);
 
     // --- Auth Funktionen ---
     async function sendMagicLink() {
@@ -158,13 +196,67 @@
     }
 
     function setUser(user) {
+      const profileName = loadProfileName();
+      const profileAvatar = loadProfileAvatar();
       if (user) {
         userEmailEl.textContent = user.email;
+        userNameEl.textContent = profileName ? profileName : 'No display name set';
+        if (profileAvatar) {
+          userAvatarEl.src = profileAvatar;
+          userAvatarEl.classList.remove('hidden');
+        } else {
+          userAvatarEl.classList.add('hidden');
+        }
         authPanel.classList.add('hidden');
         postPanel.classList.remove('hidden');
       } else {
         authPanel.classList.remove('hidden');
         postPanel.classList.add('hidden');
+      }
+    }
+
+    function loadProfileName() {
+      return localStorage.getItem('equestria_display_name') || '';
+    }
+
+    function loadProfileAvatar() {
+      return localStorage.getItem('equestria_avatar_url') || '';
+    }
+
+    function saveProfile() {
+      const name = displayNameInput.value.trim();
+      const avatar = avatarUrlInput.value.trim();
+      if (name) localStorage.setItem('equestria_display_name', name);
+      else localStorage.removeItem('equestria_display_name');
+      if (avatar) localStorage.setItem('equestria_avatar_url', avatar);
+      else localStorage.removeItem('equestria_avatar_url');
+      updateProfileUI();
+      profileStatus.textContent = 'Profile settings saved locally.';
+      profileStatus.style.color = '#8af7b6';
+    }
+
+    function updateProfileUI() {
+      const name = loadProfileName();
+      const avatar = loadProfileAvatar();
+      userNameEl.textContent = name ? name : 'No display name set';
+      if (avatar) {
+        avatarPreview.src = avatar;
+        avatarPreview.classList.remove('hidden');
+        userAvatarEl.src = avatar;
+        userAvatarEl.classList.remove('hidden');
+      } else {
+        avatarPreview.classList.add('hidden');
+        userAvatarEl.classList.add('hidden');
+      }
+    }
+
+    function updateAvatarPreview() {
+      const avatar = avatarUrlInput.value.trim();
+      if (avatar) {
+        avatarPreview.src = avatar;
+        avatarPreview.classList.remove('hidden');
+      } else {
+        avatarPreview.classList.add('hidden');
       }
     }
 
@@ -182,13 +274,18 @@
         return;
       }
 
+      const displayName = displayNameInput.value.trim();
+      const avatarUrl = avatarUrlInput.value.trim();
+
       publishBtn.disabled = true;
       setPostStatus('Publishing...', false);
 
       const { error } = await sb.from('posts').insert([{
         content,
-        user_email: session.user.email
-      }]);
+        user_email: session.user.email,
+        display_name: displayName || null,
+        avatar_url: avatarUrl || null
+      }]);//
 
       publishBtn.disabled = false;
 
@@ -204,7 +301,7 @@
     async function loadPosts() {
       const { data, error } = await sb
         .from('posts')
-        .select('id, content, user_email, created_at')
+        .select('id, content, user_email, display_name, avatar_url, created_at')
         .order('created_at', { ascending: false })
         .limit(50);
 
@@ -223,10 +320,19 @@
         dateStyle: 'medium',
         timeStyle: 'short'
       });
+      const author = post.display_name || post.user_email || 'anonymous';
+      const avatarHtml = post.avatar_url ? `<img src="${escapeHtml(post.avatar_url)}" alt="Avatar">` : `${escapeHtml(author.charAt(0).toUpperCase())}`;
+      const avatarClass = post.avatar_url ? 'post-avatar' : 'post-avatar default';
       return `
         <div class="post">
           <div class="post-header">
-            <div class="post-email">${escapeHtml(post.user_email || 'anonymous')}</div>
+            <div class="post-meta">
+              <div class="${avatarClass}">${avatarHtml}</div>
+              <div class="post-author">
+                <div class="post-name">${escapeHtml(author)}</div>
+                <div class="post-email">${escapeHtml(post.user_email || 'anonymous')}</div>
+              </div>
+            </div>
             <div class="post-time">${time}</div>
           </div>
           <div class="post-body">${escapeHtml(post.content)}</div>
