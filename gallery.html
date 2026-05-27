@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Showcase — Project Equestria</title>
+  <style>
+    :root{--bg:#060203;--accent:#7af0b0}
+    body{margin:0;font-family:'Share Tech Mono',monospace;background:linear-gradient(180deg,#05070a 0%,#090308 100%);color:#cfeee0}
+    .wrap{max-width:1100px;margin:4rem auto;padding:0 1rem}
+    h1{letter-spacing:.18em;color:var(--accent)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-top:2rem}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.06));border:1px solid rgba(122,240,176,0.06);padding:1rem;border-radius:8px;overflow:hidden;cursor:pointer;transition:transform .24s,box-shadow .24s}
+    .thumb{height:140px;background:linear-gradient(135deg,#0f3a2b,#05212a);border-radius:6px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.08);font-size:2rem}
+    .card:hover{transform:translateY(-6px);box-shadow:0 20px 50px rgba(0,0,0,0.6)}
+    .meta{margin-top:.8rem;font-size:.9rem}
+    .back{margin-top:1.6rem}
+    a.btn{color:var(--accent);text-decoration:none;border:1px solid var(--accent);padding:.4rem .7rem;border-radius:6px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Showcase</h1>
+    <p>Small visual experiments and art inspired by the collective.</p>
+    <div class="grid">
+      <div class="card"><div class="thumb">Planet</div><div class="meta">Animated planet scene</div></div>
+      <div class="card"><div class="thumb">Glitch</div><div class="meta">CSS text glitch demo</div></div>
+      <div class="card"><div class="thumb">Matrix</div><div class="meta">Matrix rain canvas</div></div>
+      <div class="card"><div class="thumb">Spectrum</div><div class="meta">Animated gradient</div></div>
+    </div>
+    <div class="back"><a class="btn" href="index.html">Back to Home</a></div>
+  </div>
+</body>
+</html>

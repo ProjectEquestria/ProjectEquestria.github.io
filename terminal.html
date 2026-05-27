@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Terminal — Project Equestria</title>
+  <style>
+    body{background:#060203;color:#8af7b6;font-family:'Share Tech Mono',monospace;margin:0;height:100vh;display:flex;align-items:center;justify-content:center}
+    .term{width:900px;max-width:95%;background:linear-gradient(180deg,#071218 0%,#040405 100%);border:1px solid #0f2b22;padding:1.2rem;border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,0.7)}
+    .header{display:flex;gap:.6rem;align-items:center;margin-bottom:.8rem}
+    .dot{width:.85rem;height:.85rem;border-radius:50%}
+    .red{background:#ff5c5c}
+    .yel{background:#ffd36b}
+    .gre{background:#7efc9a}
+    .screen{background:#020305;padding:1rem;border-radius:4px;min-height:300px;overflow:auto}
+    .line{white-space:pre-wrap}
+    .prompt{color:#4fe8b1}
+    .blink{opacity:1;animation:blink 1s steps(2) infinite}
+    @keyframes blink{50%{opacity:0}}
+    .controls{display:flex;gap:.5rem;margin-top:.8rem}
+    .btn{background:#07221a;border:1px solid #0c523f;color:#8af7b6;padding:.5rem .9rem;border-radius:4px;cursor:pointer}
+  </style>
+</head>
+<body>
+  <div class="term">
+    <div class="header">
+      <div class="dot red"></div>
+      <div class="dot yel"></div>
+      <div class="dot gre"></div>
+      <div style="margin-left:auto;color:#5fd4a0;font-size:0.9rem;">Interactive Terminal</div>
+    </div>
+    <div class="screen" id="screen" aria-live="polite"></div>
+    <div class="controls">
+      <button class="btn" id="run-btn">Run Demo</button>
+      <button class="btn" id="clear-btn">Clear</button>
+      <a class="btn" href="index.html">Back</a>
+    </div>
+  </div>
+<script>
+  const screen = document.getElementById('screen');
+  const run = document.getElementById('run-btn');
+  const clear = document.getElementById('clear-btn');
+
+  const demo = [
+    {t:0, text:'equestria@root:~$ whoami'},
+    {t:600, text:'root'},
+    {t:1200, text:'equestria@root:~$ echo "Welcome to Project Equestria"'},
+    {t:1800, text:'Welcome to Project Equestria'},
+    {t:2400, text:'equestria@root:~$ uptime'},
+    {t:3000, text:' 12:34:56 up 3 days,  2:15,  2 users'},
+    {t:3800, text:'equestria@root:~$ ls -la /safe-zone'},
+    {t:4400, text:'total 12\ndrwxr-xr-x 2 root root 4096 May 27 2026 .\n-rw-r--r-- 1 root root  220 May 27 2026 readme.txt'},
+    {t:5200, text:'equestria@root:~$ cat /safe-zone/readme.txt'},
+    {t:5800, text:'This is a visual demo only. No real systems are accessed.'}
+  ];
+
+  function typeLine(text, delay=10){
+    return new Promise(res=>{
+      const div = document.createElement('div'); div.className='line'; screen.appendChild(div);
+      let i=0; function step(){ if(i>text.length){ div.appendChild(document.createElement('br')); screen.scrollTop = screen.scrollHeight; return res(); } div.textContent = text.slice(0,i++); screen.scrollTop = screen.scrollHeight; setTimeout(step, delay);} step();
+    });
+  }
+
+  async function runDemo(){
+    run.disabled=true;
+    for(const row of demo){ await new Promise(r=>setTimeout(r,row.t)); await typeLine(row.text); }
+    run.disabled=false;
+  }
+
+  run.addEventListener('click', ()=>{ screen.innerHTML=''; runDemo(); });
+  clear.addEventListener('click', ()=> screen.innerHTML='');
+</script>
+</body>
+</html>
