@@ -1046,7 +1046,7 @@
 <!-- LUNA SPOTLIGHT -->
 <section id="luna" class="fade-in" style="padding-top: 1rem;">
   <div class="nova-card">
-    <img src="luna.jpg" alt="Luna" class="nova-photo">
+    <img id="luna-photo" src="Luna.jpg" alt="Luna" class="nova-photo" onerror="handleLunaError(this)">
     <div class="nova-meta">
       <p class="nova-role" id="luna-role">Member</p>
       <h2 class="sec-title" id="luna-name">Luna <span id="luna-name-role">(Boyfriend)</span></h2>
@@ -1064,6 +1064,20 @@
 </footer>
 
 <script>
+  function handleLunaError(img){
+    try{
+      const candidates = ['Luna.jpg','luna.jpg','Luna.JPG','luna.JPG'];
+      const idx = Number(img.dataset.tryIndex || 0);
+      const next = idx + 1;
+      if(next < candidates.length){
+        img.dataset.tryIndex = next;
+        img.src = candidates[next];
+      } else {
+        // fallback to nova image if none found
+        img.src = 'nova.jpg';
+      }
+    }catch(e){ console.warn('Luna image fallback failed', e); img.src = 'nova.jpg'; }
+  }
   /* ── MATRIX RAIN ── */
   const canvas = document.getElementById('matrix-bg');
   const ctx = canvas.getContext('2d');
