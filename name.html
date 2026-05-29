@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PROJECT EQUESTRIA // Name erklärt</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐴</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=VT323&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green: #00ff88;
+      --cyan: #00eeff;
+      --bg: #050a07;
+      --bg2: #081008;
+      --text: #c8ffd8;
+      --muted: #6ea288;
+      --panel: rgba(0,255,136,0.08);
+      --border: rgba(0,255,136,0.18);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at top, rgba(0,255,136,0.06), transparent 30%),
+                  radial-gradient(circle at bottom right, rgba(0,238,255,0.08), transparent 25%),
+                  linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      color: var(--text);
+      font-family: 'Share Tech Mono', monospace;
+      line-height: 1.8;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+      pointer-events: none;
+      opacity: 0.18;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      background: rgba(5,10,7,0.86);
+      z-index: 10;
+    }
+
+    .nav-logo {
+      font-family: 'Orbitron', monospace;
+      color: var(--green);
+      letter-spacing: 0.2em;
+      font-size: 0.95rem;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.15em;
+      font-size: 0.78rem;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--cyan); }
+
+    .page-wrap {
+      max-width: 900px;
+      margin: 4rem auto 2rem;
+      padding: 0 1.5rem;
+    }
+
+    .page-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      margin-bottom: 1rem;
+      color: var(--green);
+      text-shadow: 0 0 20px rgba(0,255,136,0.25);
+    }
+
+    .page-subtitle {
+      color: var(--cyan);
+      font-size: 1rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 2.5rem;
+    }
+
+    .placeholder-box {
+      background: rgba(0,255,136,0.04);
+      border: 1px solid var(--border);
+      padding: 2rem;
+      border-radius: 14px;
+      box-shadow: 0 0 40px rgba(0,255,136,0.06);
+    }
+
+    .placeholder-box p {
+      color: #94e1b7;
+      font-size: 1rem;
+      white-space: pre-wrap;
+    }
+
+    .footer-link {
+      display: inline-block;
+      margin-top: 2rem;
+      color: var(--green);
+      text-decoration: none;
+      letter-spacing: 0.15em;
+      border-bottom: 1px solid transparent;
+    }
+
+    .footer-link:hover {
+      border-color: var(--green);
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-logo">PROJECT<span>::</span>EQUESTRIA</div>
+    <div class="nav-links"><a href="index.html">Zurück zur Startseite</a></div>
+  </nav>
+
+  <main class="page-wrap">
+    <h1 class="page-title">Name erklärt</h1>
+    <p class="page-subtitle">Herkunft / Origin</p>
+    <div class="placeholder-box">
+      <p>
+      Der Name kommt daher, dass ich in der Schule wegen meiner Frisur gemobbt wurde, weil ich wie Fluttershy aus My Little Pony aussehe.
+      Deshalb ist der Name auch direkt mit dieser Erfahrung verbunden – er war mein erstes Victim.
+      </p>
+      <p>
+      The name comes from being bullied at school because of my hairstyle, as I looked like Fluttershy from My Little Pony.
+      That is why the name is tied to this experience — it was also my first victim.
+      </p>
+    </div>
+    <a class="footer-link" href="index.html">← Zurück zur Hauptseite</a>
+  </main>
+</body>
+</html>

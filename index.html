@@ -131,13 +131,68 @@
       border-color: var(--green);
     }
 
+    .nav-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
     .nav-status {
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       color: var(--green);
       display: flex;
       align-items: center;
       gap: 0.75rem;
       flex-wrap: wrap;
+      white-space: nowrap;
+    }
+
+    .status-toggle {
+      border: 1px solid var(--muted);
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+
+    .status-toggle:hover {
+      color: var(--green);
+      border-color: var(--green);
+      background: rgba(0,255,136,0.08);
+    }
+
+    .status-panel {
+      position: absolute;
+      top: 100%;
+      right: 2rem;
+      margin-top: 0.75rem;
+      background: rgba(5,10,7,0.96);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      display: none;
+      flex-direction: column;
+      gap: 0.6rem;
+      min-width: 220px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+      z-index: 1001;
+    }
+
+    .status-panel.show {
+      display: flex;
+    }
+
+    .status-panel span {
+      color: var(--muted);
+      font-size: 0.78rem;
+      letter-spacing: 0.13em;
+      line-height: 1.5;
+      white-space: nowrap;
     }
 
     .status-dot {
@@ -797,16 +852,22 @@
     <li><a id="nav-about" href="#about">Über uns</a></li>
     <li><a id="nav-manifest" href="#manifesto">Manifest</a></li>
     <li><a id="nav-skills" href="#expertise">Skills</a></li>
+    <li><a id="nav-name" href="name.html">Name</a></li>
     <li><a id="nav-ethics" href="#ethics">Ethik</a></li>
     <li><a id="nav-contact" href="#contact">Kontakt</a></li>
   </ul>
   <button id="lang-switch" class="lang-switch" type="button">EN</button>
-  <div class="nav-status">
-    <div class="status-dot"></div>
-    <span>ONLINE: <span id="online-count">1</span></span>
-    <span style="margin-left:1rem; color: var(--muted); font-size:0.75rem; letter-spacing:0.12em;">Besuche: <span id="visit-count">0</span></span>
-    <span style="margin-left:1rem; color: var(--muted); font-size:0.75rem; letter-spacing:0.12em;">IP: <span id="client-ip">lade...</span></span>
-    <span style="margin-left:1rem; color: var(--muted); font-size:0.75rem; letter-spacing:0.12em;">einzigartige IPs: <span id="unique-ip-count">0</span></span>
+  <div class="nav-meta">
+    <div class="nav-status">
+      <div class="status-dot"></div>
+      <span>ONLINE: <span id="online-count">1</span></span>
+    </div>
+    <button id="status-toggle" class="status-toggle" type="button" aria-expanded="false">Status</button>
+  </div>
+  <div id="status-panel" class="status-panel">
+    <span>Besuche: <strong id="visit-count">0</strong></span>
+    <span>IP: <strong id="client-ip">lade...</strong></span>
+    <span>Einzigartige IPs: <strong id="unique-ip-count">0</strong></span>
   </div>
 </nav>
 
@@ -992,11 +1053,15 @@
       <p>Experience a neon 404-style page that fits the universe aesthetic.</p>
       <a href="404.html">Visit 404 →</a>
     </div>
-      <div class="explore-card">
-        <h3>Post Board</h3>
-        <p>Sign in, publish notes, and store them directly in Supabase.</p>
-        <a href="posts.html">Open Posts →</a>
-      </div>
+    <div class="explore-card">
+      <h3>Name erklärt</h3>
+      <p>Placeholder-Textseite, die später erklärt, warum unser Name gewählt wurde.</p>
+      <a href="name.html">Mehr erfahren →</a>
+    </div>
+    <div class="explore-card">
+      <h3>Post Board</h3>
+      <p>Sign in, publish notes, and store them directly in Supabase.</p>
+      <a href="posts.html">Open Posts →</a>
     </div>
   </section>
 
@@ -1410,6 +1475,23 @@
       const next = getSavedLanguage() === 'de' ? 'en' : 'de';
       saveLanguage(next);
       applyTranslations(next);
+    });
+  }
+
+  const statusToggle = document.getElementById('status-toggle');
+  const statusPanel = document.getElementById('status-panel');
+
+  if (statusToggle && statusPanel) {
+    statusToggle.addEventListener('click', () => {
+      const isVisible = statusPanel.classList.toggle('show');
+      statusToggle.setAttribute('aria-expanded', String(isVisible));
+    });
+
+    window.addEventListener('click', (event) => {
+      if (!statusPanel.contains(event.target) && !statusToggle.contains(event.target)) {
+        statusPanel.classList.remove('show');
+        statusToggle.setAttribute('aria-expanded', 'false');
+      }
     });
   }
 
